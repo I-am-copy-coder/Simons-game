@@ -44,9 +44,19 @@ function nextSequence() {
 }
 
 
-// Red Zone-----------------------------------------------------------------------------
 function checkAnswer(currentLevel){
-    if( userClickedPattern[currentLevel] == gamePattern[currentLevel] ) // I think we shuold compare entire arrays
+
+    let result = true;
+
+    for(let i=0;i<=currentLevel;i++)
+    {
+        if(userClickedPattern[i]!=gamePattern[i])
+        {
+            result = false;
+        }
+    }
+
+    if( result ) // I think we shuold compare entire arrays
     {
         console.log("Success");
         // Calling use Clicked attern after a 1000ms delay
@@ -54,6 +64,9 @@ function checkAnswer(currentLevel){
     }
     else{
         console.log("Wrong");
+
+//      Ending game
+        gameIsRunning = false;
 
         // Playing Wrong Sound
         var wrongSound = new Audio("sounds/wrong.mp3");
@@ -69,14 +82,18 @@ function checkAnswer(currentLevel){
         $("#level-title").text("Game Over, Press Any Key to Restart");
 
         // Detecting keypress and starting the game again
-        $( document ).keypress(function(event) {
-            
+        if(!gameIsRunning)
+        {
+            gameIsRunning = true;
             level = 0;
-            gameIsRunning = false;
             gamePattern = [];
-            nextSequence();
-            
-          });
+            if(!gameIsRunning)
+            {
+                $( document ).keypress(function() {
+                    setTimeout(nextSequence(),1000);
+                  });
+            }
+        }
     }
 }
 
@@ -84,13 +101,14 @@ function checkAnswer(currentLevel){
 // Game Flow
 
 // After First Keypress
-$( document ).keypress(function(event) {
-    console.log(event);
-    if(!gameIsRunning)
-    {
+if(!gameIsRunning)
+{
+    gameIsRunning = true;
+    $( document ).keypress(function() 
+      {
         nextSequence();
-    }
-  });
+      });
+}
 
 
 
