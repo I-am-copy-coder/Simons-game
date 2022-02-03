@@ -43,6 +43,8 @@ function nextSequence() {
     userClickedPattern = [];
 }
 
+
+// Red Zone-----------------------------------------------------------------------------
 function checkAnswer(currentLevel){
     if( userClickedPattern[currentLevel] == gamePattern[currentLevel] ) // I think we shuold compare entire arrays
     {
@@ -65,6 +67,16 @@ function checkAnswer(currentLevel){
 
         // Changing The title
         $("#level-title").text("Game Over, Press Any Key to Restart");
+
+        // Detecting keypress and starting the game again
+        $( document ).keypress(function(event) {
+            
+            level = 0;
+            gameIsRunning = false;
+            gamePattern = [];
+            nextSequence();
+            
+          });
     }
 }
 
@@ -90,8 +102,12 @@ $(".btn").click(function() {
     playSound(userChosenColor);
     animatePress(userChosenColor);
 
-    // User Answer Check
-    checkAnswer(level - 1);
+    // User Answer Check only after length of user clicked pattern = length of game generated patern
+    if (userClickedPattern.length == gamePattern.length)
+    {
+        checkAnswer(level-1);
+    }
+    
 })
 
 
