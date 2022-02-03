@@ -2,12 +2,16 @@
 let userClickedPattern = [];
 let gamePattern = [];
 let buttonColors = ["red","blue","green","yellow"];
+let level = 0;
+let gameIsRunning = false;
 
+// Sound Effect
 function playSound(name) {
     var sound = new Audio("sounds/"+name+".mp3");
     sound.play();
 }
 
+// Press Effect
 function animatePress(currentColor){
     $("."+currentColor).addClass("pressed");
     setTimeout(function(){
@@ -15,33 +19,80 @@ function animatePress(currentColor){
     },100);
 }
 
+// Next Button Indicator
+function nextSequence() {
 
-// function nextSequence() {
-//     let randomNumber = Math.floor(Math.random()*4);
-//     let randomChosenColor = buttonColors[randomNumber];
-//     gamePattern.push(randomChosenColor);
+    // Generating random color from the list
+    let randomNumber = Math.floor(Math.random()*4);
+    let randomChosenColor = buttonColors[randomNumber];
+    gamePattern.push(randomChosenColor);
 
-//     $(`#${randomChosenColor}`).fadeOut(100).fadeIn(100);
-//     var sound = new Audio(`sounds/${randomChosenColor}.mp3`);
-//     sound.play();
-// }
+    // Button blink effect
+    $(`#${randomChosenColor}`).fadeOut(100).fadeIn(100);
 
-let randomNumber = Math.floor(Math.random()*4);
-let randomChosenColor = buttonColors[randomNumber];
-gamePattern.push(randomChosenColor);
+    // Sound playing effect
+    playSound(randomChosenColor);
 
-$(`#${randomChosenColor}`).fadeOut(100).fadeIn(100);
-playSound(randomChosenColor);
+    // Updating heading
+    $("#level-title").text("Level " + level.toString());
+
+    // Level Increment
+    level++;
+
+    // Setting user clicked patern to an empty array
+    userClickedPattern = [];
+}
+
+function checkAnswer(currentLevel){
+    if( userClickedPattern[currentLevel] == gamePattern[currentLevel] ) // I think we shuold compare entire arrays
+    {
+        console.log("Success");
+        // Calling use Clicked attern after a 1000ms delay
+        setTimeout( nextSequence() , 1000);
+    }
+    else{
+        console.log("Wrong");
+
+        // Playing Wrong Sound
+        var wrongSound = new Audio("sounds/wrong.mp3");
+        wrongSound.play();
+
+        // Aninmating Wrong Effeect
+        $("body").addClass("game-over");
+        setTimeout(function(){
+            $("body").removeClass("game-over",200);
+        },200);
+
+        // Changing The title
+        $("#level-title").text("Game Over, Press Any Key to Restart");
+    }
+}
 
 
+// Game Flow
+
+// After First Keypress
+$( document ).keypress(function(event) {
+    console.log(event);
+    if(!gameIsRunning)
+    {
+        nextSequence();
+    }
+  });
+
+
+
+
+// User Click Action
 $(".btn").click(function() {
     let userChosenColor = $(this).attr("id");
     userClickedPattern.push(userChosenColor);
     playSound(userChosenColor);
     animatePress(userChosenColor);
-    console.log(userClickedPattern);
+
+    // User Answer Check
+    checkAnswer(level - 1);
 })
 
 
 
-// alert(randomChosenColor);
